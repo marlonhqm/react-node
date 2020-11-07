@@ -1,0 +1,24 @@
+.main {
+  background: rgb(255, 255, 255); 
+}
+
+.form {
+  margin: 0 auto;
+  width: 280px;
+  background: rgb(255, 255, 255);
+  padding: 20px;
+  color: rgb(0, 0, 0);
+}
+
+header {
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+
+#button {
+  text-align: center;
+}
+
