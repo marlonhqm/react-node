@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {useHistory} from 'react-router-dom';
 import Header from '../Components/Header'
-import Axios from 'axios'
+import api from '../api'
 import './Home.css'
 
 
@@ -18,34 +18,28 @@ function Home(){
     campos[event.target.name] = event.target.value
     setCampos(campos)
   }
-
-    
   
   const [token, setToken] = useState('')
 
-  function handleInputToken(response) {
-    const newToken = response.data.token
-    setToken(newToken)
-    console.log(newToken)
-    alert("LOGIN REALIZADO COM SUCESSO!!")
-    history.push('/clients')
-  }
-
-  function handleFormSubmit(event){
+  function handleLogin(event){
     event.preventDefault()
-    Axios.post('http://localhost:3010/login', campos).then(response => {     
-      console.log(response.data) 
-      handleInputToken(response)
-    }).catch(function error(err){
+    api.post('/login', campos).then(response => {
+      console.log(response.data)
+      setToken(response.data.token) 
+      alert("LOGIN REALIZADO COM SUCESSO!!")
+      history.push('/clients')
+
+    }).catch(err => {
+      console.log()
       alert(err + '\nLogin Falhou!!')
     })
-    console.log(campos)
   }
 
+  api.defaults.headers['x-access-token'] = token
+  console.log(api.defaults.headers)
 
   return (
     <div className='main'>
-      <Header title="Login" />
       <form className='form' /* onSubmit={handleFormSubmit} */>
           <fieldset>
               <legend>
@@ -63,7 +57,7 @@ function Home(){
                       <input type="password" name="pwd" id="pwd" onChange={handleInputChage} />
                   </label>
               </div>
-              <input type="submit" value="Entrar" id="button" onClick={handleFormSubmit} />
+              <input type="submit" value="Entrar" id="button" onClick={handleLogin} />
           </fieldset>
       </form>
     </div>

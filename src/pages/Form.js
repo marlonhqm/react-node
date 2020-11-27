@@ -1,54 +1,70 @@
 import React, {useEffect, useState} from 'react'
 import Header from '../Components/Header'
-import Axios from 'axios'
+import api from '../api'
 import { DataGrid } from '@material-ui/data-grid'
 
-const columns = [
-  {field: 'id', headerName: 'ID', width: 70 }
-]
-const rows = [
-  {id: 1, lastName: 'Snow', firstName: 'Jon', age: 35}
-]
-
 function Form(){
+
   const [campos, setCampos] = useState({
-    txtId: 0,
-    txtNome: '',
-    txtUserName: '',
-    txtEmail: ''
+    id: 0,
+    name: '',
+    username: '',
+    email: ''
   })
   
   function handleInputChage(event) {
     campos[event.target.name] = event.target.value
     setCampos(campos)
-  
-  }
-  const [clientes, setClientes] = useState([])
-
-  /* function handleSubmitGetAll() {
-    Axios.get('http://localhost:3010/clients', {
-      headers: 
-    }).then(response => {
-      setClientes(response.data)
-      console.log(clientes)
-      
-    })
-  } */
-
-    /* useEffect(() => {
-      Axios.get('http://localhost:3010/clients').then(response => setClientes(response.data))
-    },[] ) */    
-  
-  
-  function handleSubmitSearch(event){
-    event.preventDefault()
-    Axios.post('http://localhost:3010/login', campos).then(response => {
-
-    })
+    setId(campos.id)
     console.log(campos)
   }
 
+  const [clientes, setClientes] = useState([])
+  const [id, setId] = React.useState(0);
 
+  function handleGet() {
+      api.get('/clients').then(response => {
+        console.log(response.data)
+        setClientes(response.data)
+      }).catch(function (err) {
+        alert(err + " Acesso Negado")
+        
+      })    
+  }  
+  function handlePost() {
+      api.post('/clients', campos).then((response)=>{
+        if(response){
+          alert("Usuário criado com Sucesso!")
+        }
+      }).catch(function (err) {
+        alert(err + " Acesso Negado")
+      })    
+  }
+  function handleDelete() {
+    api.delete('/clients', id).then(response => {
+      console.log(response.data)
+    }).catch(function (err) {
+      alert(err  + " Acesso Negado" )
+    })    
+  }
+
+  
+  const columns = [
+    {field: 'id', headerName: 'ID', width: 70 },
+    {field: 'name', headerName: 'NOME', width: 150 },
+    {field: 'username', headerName: 'USUÁRIO', width: 150 },
+    {field: 'email', headerName: 'EMAIL', width: 250 }
+  ]
+  const rows = []
+  clientes.map((cliente)=>rows.push(
+    {
+      id: cliente.id,
+      name: cliente.name,
+      username: cliente.username,
+      email: cliente.email
+    }
+  ))
+  
   return (
     <div>
       <Header title="Formulário Cliente" />
@@ -59,32 +75,32 @@ function Form(){
           </legend>
           <div>
               <label>Id:
-                  <input type="number" name="txtId" id="txtId" onChange={handleInputChage}  />
+                  <input type="number" name="id" id="id" onChange={handleInputChage}  />
               </label>
           </div>
           <div>
               <label>Nome:
-                  <input type="text" name="txtNome" id="txtNome" onChange={handleInputChage} />
+                  <input type="text" name="name" id="name" onChange={handleInputChage} />
               </label>
           </div>
           <div>
               <label>Usuario:
-                  <input type="text" name="txtUserName" id="txtUserName" onChange={handleInputChage} />
+                  <input type="text" name="username" id="username" onChange={handleInputChage} />
               </label>
           </div>
           <div>
               <label>Email:
-                  <input type="email" name="txtEmail" id="txtEmail" onChange={handleInputChage} />
+                  <input type="email" name="email" id="email" onChange={handleInputChage} />
               </label>
           </div>
-          <input type="submit" value="Salvar" />
-          <input type="submit" value="Pesquisar" />
-          <input type="submit" value="Editar" />
-          <input type="submit" value="Deletar" />
+          <input type="button" value="Salvar" onClick={handlePost}/>
+          <input type="button" value="Pesquisar" onClick={handleGet} />
+          <input type="button" value="Editar" />
+          <input type="button" value="Deletar" onClick={handleDelete}/>
         </fieldset>
         <p></p>
         <div className="grid" style={{ height: 400, width: '100%' }}>
-        <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection />
+        <DataGrid rows={rows} columns={columns} pageSize={5} />
         </div>
       </form>
     </div>
